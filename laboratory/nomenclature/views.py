@@ -6,43 +6,22 @@ from nomenclature.models import Service, Group, SubGroup
 
 
 def index(request):
-    # services = {}
-    #
-    # groups = Group.objects.all()
-    #
-    # for group in groups:
-    #     if group.name not in services.keys():
-    #         services[group.name] = {}
-    #         print(group.name)
-    #
-    #     subgroups = SubGroup.objects.filter(group=group)
-    #     for subgroup in subgroups:
-    #         if subgroup.name not in services[group.name].keys():
-    #             services[group.name][subgroup.name] = Service.objects.filter(subgroup=subgroup)
-    #             print(subgroup.name)
+    services = {}
 
-    # services = []
-    # groups = Group.objects.all()
-    # for group in groups:
-    #     services.append(group.name)
-    #     subgroups = SubGroup.objects.filter(group=group)
-    #     for subgroup in subgroups:
-    #         services.append(subgroup.name)
-    #         serv = Service.objects.filter(subgroup=subgroup)
-    #         for s in serv:
-    #             services.append(s)
+    groups = Group.objects.all()
 
+    for group in groups:
+        if group.name not in services.keys():
+            services[group.name] = {'name': group.name}
 
-    services = {
-        'test1': {
-            'test111': 'test112',
-            'test121': 'test122'
-        }, 'test2': {
-            'test211': 'test212',
-            'test221': 'test222'
-        }
+        subgroups = SubGroup.objects.filter(group=group)
+        for subgroup in subgroups:
+            if subgroup.name not in services[group.name].keys():
+                services[group.name][subgroup.name] = {
+                    'name': subgroup.name,
+                    'services_list': Service.objects.filter(subgroup=subgroup)
+                }
 
-    }
     context = {
         'title': 'Номенклатура',
         'services': services
@@ -70,6 +49,30 @@ def services_edit(request, pk):
 
 
 def json_nomenclature(request):
-    result = {'name': 'Максим'}
+    result = {}
 
-    return JsonResponse({'result':result})
+    groups = Group.objects.all()
+
+    for group in groups:
+        if group.name not in result.keys():
+            result[group.name] = {}
+
+        subgroups = SubGroup.objects.filter(group=group)
+        for subgroup in subgroups:
+            if subgroup.name not in result[group.name].keys():
+                result[group.name][subgroup.name] = []
+                services = Service.objects.filter(subgroup=subgroup)
+                for service in services:
+                    serv_data = [
+                        service.code,
+                        service.name,
+                        service.blanks,
+                        service.biomaterials,
+                        service.container,
+                        service.due_date,
+                        service.result_type,
+                        f'/edit/{service.pk}'
+                    ]
+                    result[group.name][subgroup.name].append(serv_data)
+
+    return JsonResponse()

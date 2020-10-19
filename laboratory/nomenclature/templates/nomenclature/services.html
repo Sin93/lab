@@ -3,13 +3,13 @@
 
 {% block js %}
 <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
-<script src="{% static 'js/nomenclature.js' %}"></script>
+
 {% endblock js %}
 
 {% block content %}
 
 <table border="1px solid black;">
-    <tr>
+    <tr id="0">
         <th>код</th>
         <th>Наименование</th>
         <th>Бланк</th>
@@ -19,6 +19,37 @@
         <th>Тип результата</th>
         <th>Кнопки</th>
     </tr>
+
+    {% for group in services.values %}
+      <tr>
+        <td colspan="8">{{ group.name }}</td>
+      </tr>
+
+      {% for subgroup in group.values %}
+
+        {% if subgroup.name %}
+          <tr>
+            <td colspan="8">{{ subgroup.name }}</td>
+          </tr>
+        {% endif %}
+
+        {% for service in subgroup.services_list %}
+          <tr>
+              <td>{{ service.code }}</td>
+              <td>{{ service.name }}</td>
+              <td>{{ service.blanks }}</td>
+              <td>{{ service.biomaterials }}</td>
+              <td>{{ service.container }}</td>
+              <td>{{ service.due_date }}</td>
+              <td>{{ service.result_type }}</td>
+              <td>
+                  <a href="{% url 'edit' service.pk %}">Ред.</a>
+              </td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+
+    {% endfor %}
 
 </table>
 
