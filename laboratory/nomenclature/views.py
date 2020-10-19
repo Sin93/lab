@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
-from nomenclature.forms import ServiceEditForm
+from nomenclature.forms import ServiceEditForm, ProfileEditForm
 from nomenclature.models import Service, Group, SubGroup
 
 
@@ -32,13 +32,22 @@ def index(request):
 def services_edit(request, pk):
     service = get_object_or_404(Service, pk=pk)
 
-    if request.method == 'POST':
-        update_form = ServiceEditForm(request.POST, instance=service)
-        if update_form.is_valid():
-            update_form.save()
-        return HttpResponseRedirect(reverse('index'))
+    if service.type.name == 'Коммерческий профиль':
+        if request.method == 'POST':
+            update_form = ProfileEditForm(request.POST, instance=service)
+            if update_form.is_valid():
+                update_form.save()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            update_form = ProfileEditForm(instance=service)
     else:
-        update_form = ServiceEditForm(instance=service)
+        if request.method == 'POST':
+            update_form = ServiceEditForm(request.POST, instance=service)
+            if update_form.is_valid():
+                update_form.save()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            update_form = ServiceEditForm(instance=service)
 
     context = {
         'title': service.code,

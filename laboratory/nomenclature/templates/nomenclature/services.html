@@ -27,10 +27,10 @@
 
       {% for subgroup in group.values %}
 
-        {% if subgroup.name %}
-          <tr>
-            <td colspan="8">{{ subgroup.name }}</td>
-          </tr>
+        {% if subgroup.name and subgroup.name != 'Нет' %}
+            <tr>
+              <td colspan="8">{{ subgroup.name }}</td>
+            </tr>
         {% endif %}
 
         {% for service in subgroup.services_list %}

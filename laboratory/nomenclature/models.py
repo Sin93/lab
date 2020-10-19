@@ -25,6 +25,9 @@ class SubGroup(models.Model):
 class ServiceType(models.Model):
     name = models.CharField(verbose_name='Наименование типа', max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class Service(models.Model):
     class Meta:
@@ -48,6 +51,9 @@ class Service(models.Model):
     classifier_1с = models.IntegerField(verbose_name='Классификатор 1С', blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.code} - {self.name}'
 
 
 class Profile(Service):
@@ -88,7 +94,7 @@ class Profile(Service):
 #     result_type = models.CharField()
 #     measure_unit = models.CharField(blank=True)
 #     decimal_places = models.SmallIntegerField(blank=True)
-# 
+#
 #     coded_result = models.ManyToManyField()
 #     reference = models.ManyToManyField()
 #
