@@ -1,6 +1,10 @@
 {% extends "nomenclature/base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
 {% block js %}
 <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
 <script src="{% static 'js/nomenclature.js' %}"></script>
@@ -8,20 +12,27 @@
 
 {% block content %}
 
-<form class="coises">
-  <p><input type="checkbox" name="blanks" class="toggle-blanks" >Какой-то текст</p>
+<form>
+  <p><input type="checkbox" name="code" class="toggle-blanks">Код</p>
+  <p><input type="checkbox" name="name" class="toggle-name">Наименование</p>
+  <p><input type="checkbox" name="blanks" class="toggle-blanks">Бланки</p>
+  <p><input type="checkbox" name="biomaterials" class="toggle-biomaterials">Биоматериалы</p>
+  <p><input type="checkbox" name="containers" class="toggle-containers">Контейнеры</p>
+  <p><input type="checkbox" name="due-date" class="toggle-due-date">Срок выполнения</p>
+  <p><input type="checkbox" name="result-type" class="toggle-result-type">Тип результата</p>
+  <p><input type="checkbox" name="edit-link" class="toggle-edit-link">Кнопки</p>
 </form>
 
 <table border="1px solid black;">
     <tr id="0">
-        <th>код</th>
-        <th>Наименование</th>
+        <th class='code'>код</th>
+        <th class='name'>Наименование</th>
         <th class='blanks'>Бланк</th>
-        <th>Биоматериал</th>
-        <th>Контейнер</th>
-        <th>Срок выполнения</th>
-        <th>Тип результата</th>
-        <th>Кнопки</th>
+        <th class='biomaterials'>Биоматериал</th>
+        <th class='containers'>Контейнер</th>
+        <th class='due-date'>Срок выполнения</th>
+        <th class='result-type'>Тип результата</th>
+        <th class='edit-link'>Кнопки</th>
     </tr>
 </table>
 
