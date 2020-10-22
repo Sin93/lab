@@ -4,9 +4,18 @@ var COLUMN_CLASSES = {
   '2': 'blanks',
   '3': 'biomaterials',
   '4': 'containers',
-  '5': 'due_date',
-  
+  '5': 'due-date',
+  '6': 'result-type',
+  '7': 'edit-link'
 }
+
+
+function get_data(field) {
+  var data_from_server = $.get(url='/get_data', data=field);
+  return data_from_server;
+};
+
+
 $(document).ready(function (){
   $.getJSON('/get_nomenclature_data', {}, function (json){
     console.log('Document ready')
@@ -31,21 +40,15 @@ $(document).ready(function (){
           var row = $('<tr></tr>')
 
           for(col in json[group][subgroup][service]) {
-            if (col <= 6) {
-              if (col == '2'){
-                var column = $('<td></td>')
-                column.text(json[group][subgroup][service][col])
-                column.addClass('blanks')
-                $(row).append(column)
-                $(nom_table).append(row)
-              } else {
-                var column = $('<td></td>')
-                column.text(json[group][subgroup][service][col])
-                $(row).append(column)
-                $(nom_table).append(row)
-              }
+            if (COLUMN_CLASSES[col] != 'edit-link') {
+              var column = $('<td></td>')
+              column.text(json[group][subgroup][service][col])
+              column.addClass(COLUMN_CLASSES[col])
+              $(row).append(column)
+              $(nom_table).append(row)
             } else {
               var column = $('<td></td>')
+              column.addClass(COLUMN_CLASSES[col])
               var edit_link = $('<a>Ред.</a>')
               edit_link.attr('href', json[group][subgroup][service][col])
               $(column).append(edit_link)
@@ -57,34 +60,17 @@ $(document).ready(function (){
       };
     };
   });
-  $('form input').click(function (className) {
-    var inputclass = $(this).attr('id')
-    var column = $('.blanks')
-    column.toggle()
+
+  $('form input').click(function (action) {
+    var new_data = get_data('keycode')
+    console.log(new_data.responseJSON)
+    var input_id = action.currentTarget.name
+    var column = $(`.${input_id}`)
+    var column_class_list = column[0].classList
+    if (!column_class_list.contains('visible')) {
+      column.addClass('visible')
+    } else {
+      column.removeClass('visible')
+    };
   });
 });
-
-
-
-
-          // var column = $('<td></td>')
-          // column.text(service)
-          // $(row).append(column)
-          // $(nom_table).append(row)
-          //
-          // var column = $('<td></td>')
-          // column.text(service.name)
-          // $(row).append(column)
-          // $(nom_table).append(row)
-          //
-          // $(row).append('<td></td>').text(service['blank'])
-          // $(nom_table).append(row)
-          // $(row).append('<td></td>').text(service['biomaterial'])
-          // $(nom_table).append(row)
-          // $(row).append('<td></td>').text(service['container'])
-          // $(nom_table).append(row)
-          // $(row).append('<td></td>').text(service['due_date'])
-          // $(nom_table).append(row)
-          // $(row).append('<td></td>').text(service['result_type'])
-          // $(nom_table).append(row)
-          // $(row).append('<td></td>').text(service['edit_link'])

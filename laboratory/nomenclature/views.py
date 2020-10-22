@@ -65,7 +65,6 @@ def json_nomenclature(request):
     for group in groups:
         if group.name not in result.keys():
             result[group.name] = {}
-            print(group.name)
 
         subgroups = SubGroup.objects.filter(group=group)
         for subgroup in subgroups:
@@ -86,3 +85,7 @@ def json_nomenclature(request):
                     result[group.name][subgroup.name].append(serv_data)
 
     return JsonResponse(result)
+
+
+def json_data(request):
+    return JsonResponse({'data': 'Какой-то data'})
