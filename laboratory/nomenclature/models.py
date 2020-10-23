@@ -62,6 +62,10 @@ class Profile(Service):
 
     services = models.ManyToManyField(Service, related_name = 'услуги')
 
+# class MadicineData(models.Model):
+#     service = models.ForeignKey(Service, models.SET_NULL, null=True, )
+
+
 # class Client(models.Model):
 #     code_laport = models.CharField()
 #     code_portal = models.CharField()

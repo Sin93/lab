@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm
 from nomenclature.models import Service, Group, SubGroup
 
+import json
 
 def index(request):
     services = {}
@@ -88,4 +89,8 @@ def json_nomenclature(request):
 
 
 def json_data(request):
+    # data = request.META['QUERY_STRING']
+    # print(data)
+    # print(json.loads(data))
+
     return JsonResponse({'data': 'Какой-то data'})
