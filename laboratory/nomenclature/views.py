@@ -90,5 +90,9 @@ def json_nomenclature(request):
 
 def json_data(request, field_type):
     print(field_type)
+    data = {}
+    servises = Service.objects.all()
+    for service in servises:
+        data[service.code] = getattr(service, field_type)
 
     return JsonResponse({'data': 'Какой-то data'})

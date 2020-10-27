@@ -15,6 +15,7 @@ $(document).ready(function (){
     console.log('Document ready')
     for(var group in json) {
       var row = $('<tr></tr>')
+      row.addClass('group')
       var cols = $('<td colspan=8></td>')
       cols.text(group)
       $(row).append(cols)
@@ -23,6 +24,7 @@ $(document).ready(function (){
 
       for(subgroup in json[group]) {
         var row = $('<tr></tr>')
+        row.addClass('subgroup')
         var cols = $('<td colspan=8></td>')
         cols.text(subgroup)
         $(row).append(cols)
@@ -32,11 +34,11 @@ $(document).ready(function (){
         for(service in json[group][subgroup]) {
           nom_table = $('table')
           var row = $('<tr></tr>')
+          row.attr('id', json[group][subgroup][service][0])
 
           for(col in json[group][subgroup][service]) {
             var column = $('<td></td>')
             column.addClass(COLUMN_CLASSES[col])
-            column.attr('id', json[group][subgroup][service][0])
 
             if (COLUMN_CLASSES[col] != 'edit-link') {
               column.text(json[group][subgroup][service][col])
@@ -55,16 +57,17 @@ $(document).ready(function (){
   });
 
   $('form input').click(function (action) {
+    var condition = action.currentTarget.checked
     var input_id = action.currentTarget.name
     var new_data = $.getJSON(`/get_data/${input_id}`, function(json) {
       console.log(json['data'])
     });
     var column = $(`.${input_id}`)
     var column_class_list = column[0].classList
-    if (!column_class_list.contains('visible')) {
-      column.addClass('visible')
-    } else {
+    if (condition) {
       column.removeClass('visible')
+    } else {
+      column.addClass('visible')
     };
   });
 });
