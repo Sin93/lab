@@ -88,9 +88,7 @@ def json_nomenclature(request):
     return JsonResponse(result)
 
 
-def json_data(request):
-    # data = request.META['QUERY_STRING']
-    # print(data)
-    # print(json.loads(data))
+def json_data(request, field_type):
+    print(field_type)
 
     return JsonResponse({'data': 'Какой-то data'})

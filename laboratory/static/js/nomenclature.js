@@ -56,11 +56,7 @@ $(document).ready(function (){
 
   $('form input').click(function (action) {
     var input_id = action.currentTarget.name
-    console.log(input_id)
-    var data_for_GET = {"data_type": "name", "target_test": "1.1.A1"}
-    data_for_GET = JSON.stringify(data_for_GET)
-    console.log(typeOf data_for_GET)
-    var new_data = $.getJSON('/get_data', data_for_GET, function(json) {
+    var new_data = $.getJSON(`/get_data/${input_id}`, function(json) {
       console.log(json['data'])
     });
     var column = $(`.${input_id}`)
