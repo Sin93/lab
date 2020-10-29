@@ -6,6 +6,8 @@ from nomenclature.models import Service, Group, SubGroup
 
 import json
 
+DICT_OF_IMPORTED_CLASSES = globals()
+
 def index(request):
     services = {}
 
@@ -81,18 +83,19 @@ def json_nomenclature(request):
                         service.container,
                         service.due_date,
                         service.result_type,
-                        f'/edit/{service.pk}'
+                        service.pk
                     ]
                     result[group.name][subgroup.name].append(serv_data)
 
     return JsonResponse(result)
 
 
-def json_data(request, field_type):
-    print(field_type)
+def json_data(request, model, field_type):
+    print(model, field_type)
+    model = DICT_OF_IMPORTED_CLASSES[model]
     data = {}
-    servises = Service.objects.all()
-    for service in servises:
-        data[service.code] = getattr(service, field_type)
-
-    return JsonResponse({'data': 'Какой-то data'})
+    services = model.objects.all()
+    for service in services:
+        attr = getattr(service, field_type)
+        data[service.pk] = attr.name
+    return JsonResponse(data)

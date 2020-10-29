@@ -4,9 +4,10 @@ var COLUMN_CLASSES = {
   '2': 'blanks',
   '3': 'biomaterials',
   '4': 'containers',
-  '5': 'due-date',
-  '6': 'result-type',
-  '7': 'edit-link'
+  '5': 'due_date',
+  '6': 'result_type',
+  '7': 'edit-link',
+  '8': 'type',
 }
 
 
@@ -34,7 +35,7 @@ $(document).ready(function (){
         for(service in json[group][subgroup]) {
           nom_table = $('table')
           var row = $('<tr></tr>')
-          row.attr('id', json[group][subgroup][service][0])
+          row.attr('id', json[group][subgroup][service][7])
 
           for(col in json[group][subgroup][service]) {
             var column = $('<td></td>')
@@ -44,7 +45,7 @@ $(document).ready(function (){
               column.text(json[group][subgroup][service][col])
             } else {
               var edit_link = $('<a>Ред.</a>')
-              edit_link.attr('href', json[group][subgroup][service][col])
+              edit_link.attr('href', `/edit/${json[group][subgroup][service][col]}`)
               $(column).append(edit_link)
             };
 
@@ -57,17 +58,39 @@ $(document).ready(function (){
   });
 
   $('form input').click(function (action) {
+    var groups = $('.group').children('td')
+    var current_colspan = groups.attr('colspan')
+    var subgroups = $('.subgroup').children('td')
     var condition = action.currentTarget.checked
     var input_id = action.currentTarget.name
-    var new_data = $.getJSON(`/get_data/${input_id}`, function(json) {
-      console.log(json['data'])
-    });
+    var model = action.target.attributes.model.textContent
     var column = $(`.${input_id}`)
-    var column_class_list = column[0].classList
-    if (condition) {
-      column.removeClass('visible')
+    if (column.length > 1) {
+      if (condition) {
+        column.removeClass('visible')
+        var new_colspan = Number(current_colspan) + 1
+        groups.attr('colspan', new_colspan)
+        subgroups.attr('colspan', new_colspan)
+      } else {
+        column.addClass('visible')
+        var new_colspan = Number(current_colspan) - 1
+        groups.attr('colspan', new_colspan)
+        subgroups.attr('colspan', new_colspan)
+      };
     } else {
-      column.addClass('visible')
+      var new_data = $.getJSON(`/get_data/${model}/${input_id}`, function(json) {
+        var new_colspan = Number(current_colspan) + 1
+        groups.attr('colspan', new_colspan)
+        subgroups.attr('colspan', new_colspan)
+        for (itm in json) {
+          var selector = "#" + itm
+          var row = $(selector)
+          var column = $('<td></td>')
+          column.addClass(input_id)
+          column.text(json[itm])
+          $(row).append(column)
+        };
+      });
     };
   });
 });
