@@ -1,6 +1,6 @@
 from django import forms
 
-from nomenclature.models import Service, Profile
+from nomenclature.models import Service, Profile, UploadFiles
 
 class ServiceEditForm(forms.ModelForm):
     class Meta:

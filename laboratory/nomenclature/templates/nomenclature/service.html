@@ -1,0 +1,35 @@
+{% extends "nomenclature/base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+{% endblock css %}
+
+{% block content %}
+    <table>
+      <tr>
+        <th>Код</th>
+        <td>{{ service.code }}</td>
+      </tr>
+      <tr>
+        <th>Наименование</th>
+        <td>{{ service.name }}</td>
+      </tr>
+      <tr>
+        <th>Бланки</th>
+        <td>{{ service.blanks }}</td>
+      </tr>
+      <tr>
+        <th>Контейнеры</th>
+        <td>{{ service.container }}</td>
+      </tr>
+      <tr>
+        <th>Файлы</th>
+        <td></td>
+      </tr>
+      <tr>
+        <th></th>
+        <td></td>
+      </tr>
+    </table>
+{% endblock content %}

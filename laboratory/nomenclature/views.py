@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm
-from nomenclature.models import Service, Group, SubGroup
+from nomenclature.models import Service, Group, SubGroup, UploadFiles
 
 import json
 
@@ -31,6 +31,30 @@ def index(request):
     }
 
     return render(request, 'nomenclature/services.html', context)
+
+
+def services_view(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+
+    context = {
+        'title': service.code,
+        'service': service
+    }
+
+    return render(request, 'nomenclature/service.html', context)
+
+
+def upload_file(request, pk):
+    if request.method == 'POST':
+        file = request.FILES['file']
+        print(request)
+        service = Service.get_object_or_404(pk=pk)
+        upload_file = UploadFiles(service=service, file=file)
+        upload_file.save()
+
+        return JsonResponse({'result': 'ok'})
+    return JsonResponse({'result': 'fail'})
+
 
 def services_edit(request, pk):
     service = get_object_or_404(Service, pk=pk)

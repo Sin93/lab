@@ -44,8 +44,8 @@ $(document).ready(function (){
             if (COLUMN_CLASSES[col] != 'edit-link') {
               column.text(json[group][subgroup][service][col])
             } else {
-              var edit_link = $('<a>Ред.</a>')
-              edit_link.attr('href', `/edit/${json[group][subgroup][service][col]}`)
+              var edit_link = $('<a>ИНФО</a>')
+              edit_link.attr('href', `/services_view/${json[group][subgroup][service][col]}`)
               $(column).append(edit_link)
             };
 
