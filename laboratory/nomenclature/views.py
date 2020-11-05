@@ -35,10 +35,13 @@ def index(request):
 
 def services_view(request, pk):
     service = get_object_or_404(Service, pk=pk)
-
+    files = UploadFiles.objects.filter(service=pk)
+    if not files:
+        files = ['not files']
     context = {
         'title': service.code,
-        'service': service
+        'service': service,
+        'files': files
     }
 
     return render(request, 'nomenclature/service.html', context)
@@ -52,8 +55,8 @@ def upload_file(request, pk):
         upload_file = UploadFiles(service=service, file=file)
         upload_file.save()
 
-        return JsonResponse({'result': 'ok'})
-    return JsonResponse({'result': 'fail'})
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    # return JsonResponse({'result': 'fail'})
 
 
 def services_edit(request, pk):

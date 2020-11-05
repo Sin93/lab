@@ -5,6 +5,11 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 {% endblock css %}
 
+{% block js %}
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script src="{% static 'js/service.js' %}"></script>
+{% endblock js %}
+
 {% block content %}
     <table>
       <tr>
@@ -25,7 +30,13 @@
       </tr>
       <tr>
         <th>Файлы</th>
-        <td></td>
+        <td>
+          <input type="file" name="upload_file" value="Загрузить ещё файл">
+          <button type="button" name="button" class="upload">Загрузить</button>
+          {% for file in files %}
+            <p>{{ file }}</p>
+          {% endfor %}
+        </td>
       </tr>
       <tr>
         <th></th>

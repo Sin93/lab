@@ -60,7 +60,7 @@ class Service(models.Model):
 class UploadFiles(models.Model):
     service = models.ForeignKey(Service, models.SET_NULL, verbose_name='Услуга', null=True)
     file = models.FileField(verbose_name='файл', blank=True, null=True)
-    filename = models.CharField(verbose_name='имя файла', null=True, blank=True)
+    filename = models.CharField(verbose_name='имя файла', max_length=100, null=True, blank=True)
 
 
 class Profile(Service):
