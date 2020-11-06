@@ -31,10 +31,13 @@
       <tr>
         <th>Файлы</th>
         <td>
-          <input type="file" name="upload_file" value="Загрузить ещё файл">
-          <button type="button" name="button" class="upload">Загрузить</button>
+          <form class="upload_file" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ upload_file_form.as_p }}
+            <input type="submit" value="Загрузить" >
+          </form>
           {% for file in files %}
-            <p>{{ file }}</p>
+            <a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a>
           {% endfor %}
         </td>
       </tr>

@@ -1,0 +1,6 @@
+import requests
+
+data = {"orderNumber":"","startDate":"2020-10-15","endDate":"2020-10-15","surname":"","name":"","fatherName":"","dob":"","sender":"","showDeleted":1,"type":["ПЖК"],"isDuplicate":"","containerNumber":"","status":"","user":"","locations":["KRR"]}
+headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36', 'cookie': 'CSPSESSIONID-SP-443-UP-laport-rest-=01e000000000WCNw1VXnR5g1Vb$N3VH2KEt$__$$ZcKf93cxgq; CacheBrowserId=DF1TiKg9Q_6XrqBWXFpBbA--; CSPWSERVERID=hzWv3gY6'}
+
+r = requests.post('https://laport.kdl.ru/laport/rest/search/container', json=data, verify=False, headers=headers)

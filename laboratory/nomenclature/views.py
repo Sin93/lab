@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse
-from nomenclature.forms import ServiceEditForm, ProfileEditForm
+from django.http import HttpResponse, JsonResponse, FileResponse
+from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
 from nomenclature.models import Service, Group, SubGroup, UploadFiles
 
 import json
@@ -35,28 +35,47 @@ def index(request):
 
 def services_view(request, pk):
     service = get_object_or_404(Service, pk=pk)
-    files = UploadFiles.objects.filter(service=pk)
-    if not files:
-        files = ['not files']
-    context = {
-        'title': service.code,
-        'service': service,
-        'files': files
-    }
+    if request.method == 'POST':
+        form = UploadFilesForm(request.POST, request.FILES)
+        if form.is_valid():
+            service = get_object_or_404(Service, pk=pk)
+            filename = request.FILES['file'].name
+            print()
+            new_file = UploadFiles(service=service, file=request.FILES['file'], filename=filename)
+            new_file.save()
+        return HttpResponseRedirect(f'/services_view/{pk}')
+    else:
+        service = get_object_or_404(Service, pk=pk)
+        files = UploadFiles.objects.filter(service=pk)
+        if not files:
+            files = ['not files']
+        context = {
+            'title': service.code,
+            'service': service,
+            'files': files,
+            'upload_file_form': UploadFilesForm
+        }
 
-    return render(request, 'nomenclature/service.html', context)
+        return render(request, 'nomenclature/service.html', context)
 
 
 def upload_file(request, pk):
     if request.method == 'POST':
         file = request.FILES['file']
         print(request)
+        print(type(file))
         service = Service.get_object_or_404(pk=pk)
         upload_file = UploadFiles(service=service, file=file)
         upload_file.save()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    # return JsonResponse({'result': 'fail'})
+
+
+def download_file(request, pk):
+    # response_file = get_object_or_404(UploadFiles, pk=pk)
+    # response_file = open(f'{}', 'rb')
+    # return FileResponse(response_file)
+    return True
 
 
 def services_edit(request, pk):
