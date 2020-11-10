@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
 from nomenclature.models import Service, Group, SubGroup, UploadFiles
 
-import json
+import json, os
 
 DICT_OF_IMPORTED_CLASSES = globals()
 
@@ -48,7 +48,7 @@ def services_view(request, pk):
         service = get_object_or_404(Service, pk=pk)
         files = UploadFiles.objects.filter(service=pk)
         if not files:
-            files = ['not files']
+            files = False
         context = {
             'title': service.code,
             'service': service,
@@ -72,10 +72,10 @@ def upload_file(request, pk):
 
 
 def download_file(request, pk):
-    # response_file = get_object_or_404(UploadFiles, pk=pk)
-    # response_file = open(f'{}', 'rb')
-    # return FileResponse(response_file)
-    return True
+    response_file = UploadFiles.objects.get(pk=pk)
+    print(dir(response_file.file))
+    bynary_file = response_file.file.open()
+    return FileResponse(bynary_file, as_attachment=True)
 
 
 def services_edit(request, pk):

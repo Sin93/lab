@@ -11,6 +11,7 @@
 {% endblock js %}
 
 {% block content %}
+    <a href="/">К номенклатуре</a>
     <table>
       <tr>
         <th>Код</th>
@@ -29,6 +30,10 @@
         <td>{{ service.container }}</td>
       </tr>
       <tr>
+        <th>Дата создания</th>
+        <td>{{ service.created_at }}</td>
+      </tr>
+      <tr>
         <th>Файлы</th>
         <td>
           <form class="upload_file" method="post" enctype="multipart/form-data">
@@ -36,9 +41,17 @@
             {{ upload_file_form.as_p }}
             <input type="submit" value="Загрузить" >
           </form>
-          {% for file in files %}
-            <a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a>
-          {% endfor %}
+          {% if files %}
+            <table>
+              {% for file in files %}
+                <tr><td><a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a></td></tr>
+              {% endfor %}
+            </table>
+
+          {% else %}
+            <p>Для этого исследования не загружено файлов</p>
+          {% endif %}
+
         </td>
       </tr>
       <tr>
