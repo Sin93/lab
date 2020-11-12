@@ -74,6 +74,12 @@ def upload_file(request, pk):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+def delete_file(request, pk):
+    file = get_object_or_404(UploadFiles, pk=pk)
+    file.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 def download_file(request, pk):
     response_file = UploadFiles.objects.get(pk=pk)
     print(dir(response_file.file))

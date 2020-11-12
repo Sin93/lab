@@ -9,5 +9,6 @@ urlpatterns = [
     path('get_nomenclature_data', views.json_nomenclature, name='get_nomenclature_data'),
     path('get_data/<str:model>/<str:field_type>', views.json_data, name='get_data'),
     path('upload_file/<int:pk>', views.upload_file, name='upload_file'),
-    path('download_file/<int:pk>', views.download_file, name='download_file')
+    path('download_file/<int:pk>', views.download_file, name='download_file'),
+    path('delete_file/<int:pk>', views.delete_file, name='delete_file'),
 ]

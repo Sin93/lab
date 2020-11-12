@@ -55,7 +55,10 @@
           {% if files %}
             <table>
               {% for file in files %}
-                <tr><td><a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a></td></tr>
+                <tr>
+                  <td><a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a></td>
+                  <td><a class="btn btn-danger" href={% url 'delete_file' pk=file.pk %} role="button">УДАЛИТЬ</a></td>
+                </tr>
               {% endfor %}
             </table>
 
