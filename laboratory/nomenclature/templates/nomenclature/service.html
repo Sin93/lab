@@ -2,16 +2,27 @@
 {% load static %}
 
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 {% endblock css %}
 
 {% block js %}
-<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
-<script src="{% static 'js/service.js' %}"></script>
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/service.js' %}"></script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 {% endblock js %}
 
 {% block content %}
-    <a href="/">К номенклатуре</a>
+
+    <ul class="buttons">
+      {% if previous_service %}
+        <li><a class="btn btn-primary" href={% url 'view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
+      {% endif %}
+      {% if following_service %}
+        <li><a class="btn btn-primary" href={% url 'view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
+      {% endif %}
+    </ul>
+
     <table>
       <tr>
         <th>Код</th>

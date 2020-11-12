@@ -40,17 +40,20 @@ def services_view(request, pk):
         if form.is_valid():
             service = get_object_or_404(Service, pk=pk)
             filename = request.FILES['file'].name
-            print()
             new_file = UploadFiles(service=service, file=request.FILES['file'], filename=filename)
             new_file.save()
         return HttpResponseRedirect(f'/services_view/{pk}')
     else:
         service = get_object_or_404(Service, pk=pk)
+        previous_service = Service.objects.filter(pk=pk-1).first()
+        following_service = Service.objects.filter(pk=pk+1).first()
         files = UploadFiles.objects.filter(service=pk)
         if not files:
             files = False
         context = {
             'title': service.code,
+            'previous_service': previous_service,
+            'following_service': following_service,
             'service': service,
             'files': files,
             'upload_file_form': UploadFilesForm
@@ -116,6 +119,13 @@ def json_nomenclature(request):
             result[group.name] = {}
 
         subgroups = SubGroup.objects.filter(group=group)
+
+        if len(subgroups) == 1 and subgroups[0].name == 'Нет':
+            services = Service.objects.filter(subgroup=subgroups[0])
+            if not services:
+                result.pop(group.name)
+                continue
+
         for subgroup in subgroups:
             if subgroup.name not in result[group.name].keys():
                 result[group.name][subgroup.name] = []

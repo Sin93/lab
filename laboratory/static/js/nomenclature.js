@@ -10,31 +10,48 @@ var COLUMN_CLASSES = {
   '8': 'type',
 }
 
-
 $(document).ready(function (){
   $.getJSON('/get_nomenclature_data', {}, function (json){
-    console.log('Document ready')
-    for(var group in json) {
-      var row = $('<tr></tr>')
-      row.addClass('group')
-      var cols = $('<td colspan=8></td>')
-      cols.text(group)
-      $(row).append(cols)
-      nom_table = $('table')
-      $(nom_table).append(row)
 
-      for(subgroup in json[group]) {
+    for(var group in json) {
+      if (group != 'Нет') {
         var row = $('<tr></tr>')
-        row.addClass('subgroup')
+        row.addClass('group')
         var cols = $('<td colspan=8></td>')
-        cols.text(subgroup)
+        cols.text(group)
         $(row).append(cols)
         nom_table = $('table')
         $(nom_table).append(row)
+      }
+
+      for(subgroup in json[group]) {
+        if (subgroup != 'Нет') {
+          if (json[group][subgroup].length > 0) {
+            var row = $('<tr></tr>')
+            row.addClass('subgroup')
+            var cols = $('<td colspan=8></td>')
+            cols.text(subgroup)
+            cols.css('background-color', 'DarkOrange')
+            $(row).append(cols)
+            nom_table = $('table')
+            $(nom_table).append(row)
+          }
+        }
 
         for(service in json[group][subgroup]) {
           nom_table = $('table')
           var row = $('<tr></tr>')
+          row.addClass('service')
+          row.click(function(event) {
+            if (event.currentTarget.classList.value.indexOf('active') == -1) {
+              $(event.currentTarget).addClass('active')
+              console.log(event)
+            } else {
+              $(event.currentTarget).removeClass('active')
+              console.log(event)
+            };
+          });
+
           row.attr('id', json[group][subgroup][service][7])
 
           for(col in json[group][subgroup][service]) {
@@ -46,6 +63,9 @@ $(document).ready(function (){
             } else {
               var edit_link = $('<a>ИНФО</a>')
               edit_link.attr('href', `/services_view/${json[group][subgroup][service][col]}`)
+              edit_link.addClass('btn')
+              edit_link.addClass('btn-success')
+              edit_link.addClass('btn-sm')
               $(column).append(edit_link)
             };
 
@@ -56,6 +76,7 @@ $(document).ready(function (){
       };
     };
   });
+
 
   $('form input').click(function (action) {
     var groups = $('.group').children('td')
