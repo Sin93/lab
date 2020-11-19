@@ -1,0 +1,76 @@
+{% extends "nomenclature/base.html" %}
+{% load static %}
+
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+{% endblock css %}
+
+{% block js %}
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/service.js' %}"></script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock js %}
+
+{% block content %}
+
+    <ul class="buttons">
+      {% if previous_service %}
+        <li><a class="btn btn-primary" href={% url 'view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
+      {% endif %}
+      {% if following_service %}
+        <li><a class="btn btn-primary" href={% url 'view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
+      {% endif %}
+    </ul>
+
+    <table>
+      <tr>
+        <th>Код</th>
+        <td>{{ service.code }}</td>
+      </tr>
+      <tr>
+        <th>Наименование</th>
+        <td>{{ service.name }}</td>
+      </tr>
+      <tr>
+        <th>Бланки</th>
+        <td>{{ service.blanks }}</td>
+      </tr>
+      <tr>
+        <th>Контейнеры</th>
+        <td>{{ service.container }}</td>
+      </tr>
+      <tr>
+        <th>Дата создания</th>
+        <td>{{ service.created_at }}</td>
+      </tr>
+      <tr>
+        <th>Файлы</th>
+        <td>
+          <form class="upload_file" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ upload_file_form.as_p }}
+            <input type="submit" value="Загрузить" >
+          </form>
+          {% if files %}
+            <table>
+              {% for file in files %}
+                <tr>
+                  <td><a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a></td>
+                  <td><a class="btn btn-danger" href={% url 'delete_file' pk=file.pk %} role="button">УДАЛИТЬ</a></td>
+                </tr>
+              {% endfor %}
+            </table>
+
+          {% else %}
+            <p>Для этого исследования не загружено файлов</p>
+          {% endif %}
+
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td></td>
+      </tr>
+    </table>
+{% endblock content %}

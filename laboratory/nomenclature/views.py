@@ -1,9 +1,12 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse
-from nomenclature.forms import ServiceEditForm, ProfileEditForm
-from nomenclature.models import Service, Group, SubGroup
+from django.http import HttpResponse, JsonResponse, FileResponse
+from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
+from nomenclature.models import Service, Group, SubGroup, UploadFiles
 
+import json, os
+
+DICT_OF_IMPORTED_CLASSES = globals()
 
 def index(request):
     services = {}
@@ -28,6 +31,61 @@ def index(request):
     }
 
     return render(request, 'nomenclature/services.html', context)
+
+
+def services_view(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        form = UploadFilesForm(request.POST, request.FILES)
+        if form.is_valid():
+            service = get_object_or_404(Service, pk=pk)
+            filename = request.FILES['file'].name
+            new_file = UploadFiles(service=service, file=request.FILES['file'], filename=filename)
+            new_file.save()
+        return HttpResponseRedirect(f'/services_view/{pk}')
+    else:
+        service = get_object_or_404(Service, pk=pk)
+        previous_service = Service.objects.filter(pk=pk-1).first()
+        following_service = Service.objects.filter(pk=pk+1).first()
+        files = UploadFiles.objects.filter(service=pk)
+        if not files:
+            files = False
+        context = {
+            'title': service.code,
+            'previous_service': previous_service,
+            'following_service': following_service,
+            'service': service,
+            'files': files,
+            'upload_file_form': UploadFilesForm
+        }
+
+        return render(request, 'nomenclature/service.html', context)
+
+
+def upload_file(request, pk):
+    if request.method == 'POST':
+        file = request.FILES['file']
+        print(request)
+        print(type(file))
+        service = Service.get_object_or_404(pk=pk)
+        upload_file = UploadFiles(service=service, file=file)
+        upload_file.save()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def delete_file(request, pk):
+    file = get_object_or_404(UploadFiles, pk=pk)
+    file.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def download_file(request, pk):
+    response_file = UploadFiles.objects.get(pk=pk)
+    print(dir(response_file.file))
+    bynary_file = response_file.file.open()
+    return FileResponse(bynary_file, as_attachment=True)
+
 
 def services_edit(request, pk):
     service = get_object_or_404(Service, pk=pk)
@@ -67,6 +125,13 @@ def json_nomenclature(request):
             result[group.name] = {}
 
         subgroups = SubGroup.objects.filter(group=group)
+
+        if len(subgroups) == 1 and subgroups[0].name == 'Нет':
+            services = Service.objects.filter(subgroup=subgroups[0])
+            if not services:
+                result.pop(group.name)
+                continue
+
         for subgroup in subgroups:
             if subgroup.name not in result[group.name].keys():
                 result[group.name][subgroup.name] = []
@@ -80,12 +145,19 @@ def json_nomenclature(request):
                         service.container,
                         service.due_date,
                         service.result_type,
-                        f'/edit/{service.pk}'
+                        service.pk
                     ]
                     result[group.name][subgroup.name].append(serv_data)
 
     return JsonResponse(result)
 
 
-def json_data(request):
-    return JsonResponse({'data': 'Какой-то data'})
+def json_data(request, model, field_type):
+    print(model, field_type)
+    model = DICT_OF_IMPORTED_CLASSES[model]
+    data = {}
+    services = model.objects.all()
+    for service in services:
+        attr = getattr(service, field_type)
+        data[service.pk] = attr.name
+    return JsonResponse(data)

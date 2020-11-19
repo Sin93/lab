@@ -1,3 +1,27 @@
 .visible {
   display: none;
 }
+
+.group {
+  background-color: Violet;
+}
+
+.subgroup {
+  background-color: DarkOrange;
+}
+
+.service:hover {
+  background-color: #E0FFFF;
+}
+
+.service.active:hover {
+  background-color: #87CEEB;
+}
+
+.active {
+  background-color: #87CEFA;
+}
+
+ul.buttons li {
+  display: inline;
+}

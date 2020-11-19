@@ -52,8 +52,18 @@ class Service(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
     def __str__(self):
         return f'{self.code} - {self.name}'
+
+
+class UploadFiles(models.Model):
+    service = models.ForeignKey(Service, models.SET_NULL, verbose_name='Услуга', null=True)
+    file = models.FileField(verbose_name='файл', blank=True, null=True, upload_to='files')
+    filename = models.CharField(verbose_name='имя файла', max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.filename
 
 
 class Profile(Service):
@@ -61,6 +71,10 @@ class Profile(Service):
         verbose_name = 'Профили'
 
     services = models.ManyToManyField(Service, related_name = 'услуги')
+
+# class MadicineData(models.Model):
+#     service = models.ForeignKey(Service, models.SET_NULL, null=True, )
+
 
 # class Client(models.Model):
 #     code_laport = models.CharField()

@@ -128,6 +128,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
+MEDIA_URL = '/upload_files/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'upload_files')
+
 BOOTSTRAP4 = {
     "error_css_class": "bootstrap4-error",
     "required_css_class": "bootstrap4-required",
