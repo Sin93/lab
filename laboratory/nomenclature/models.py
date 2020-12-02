@@ -4,6 +4,32 @@ from datetime import date
 
 CLIENT_GROUPS = [('ND', 'Not defined'),]
 
+SEX = [
+    ('M', 'Мужской'),
+    ('F', 'Женский'),
+    ('A', 'Любой')
+]
+
+TEST_RESULT_TYPE = [
+    ('N', 'Numeric'),
+    ('FT', 'Free Text'),
+    ('TICR', 'Test Item Coded Result'),
+    ('DTA', 'Display Text Area')
+]
+
+TYPE_PLACE_OF_EXECUTION = [
+    ('Аутсорсинг', (
+            ('MO', 'Москва'),
+            ('PL', 'Местный')
+        )
+    ),
+    ('Лаборатория', (
+            ('INS', 'Прибор'),
+            ('MAN', 'Ручная методика')
+        )
+    )
+]
+
 
 class Group(models.Model):
     number = models.CharField(verbose_name='Номер группы', max_length=3, unique=True)
@@ -29,6 +55,52 @@ class ServiceType(models.Model):
         return self.name
 
 
+class Region(models.Model):
+    name = models.CharField(verbose_name='Филиал', max_length=20, unique=True)
+
+
+class PlaceOfExecution(models.Model):
+    name = models.CharField(verbose_name='Наименование', max_length=100)
+    region = models.ForeignKey(Region, models.CASCADE, verbose_name='Филиал')
+    type = models.CharField(verbose_name='Тип места выполнения', max_length=20, choices=TYPE_PLACE_OF_EXECUTION)
+
+
+class Test(models.Model):
+    keycode = models.CharField(verbose_name='Ключ теста', max_length=50)
+    name = models.CharField(verbose_name='Наименование теста', max_length=250)
+    kdl_test_code = models.CharField(verbose_name='Внешний код (КДЛ.Тест.Код)', max_length=50, blank=True, null=True)
+    kdl_test_key = models.CharField(verbose_name='Внешний код (КДЛ.Тест.Ключ)', max_length=50, blank=True, null=True)
+    result_type = models.CharField(verbose_name='Тип результата', max_length=30, choices=TEST_RESULT_TYPE)
+    measure_unit = models.CharField(verbose_name='Единицы измерения', max_length=50, blank=True)
+    decimal_places = models.SmallIntegerField(verbose_name='Количество знаков после запятой', blank=True)
+
+
+class Reference(models.Model):
+    test = models.ForeignKey(Test, models.CASCADE, verbose_name='Тест', null=True, blank=True, unique=False)
+    active = models.BooleanField(verbose_name='активность', default=True)
+    position = models.SmallIntegerField(verbose_name='Позиция', null=True)
+    age_from = models.CharField(verbose_name='Возраст с', max_length=10, blank=True)
+    age_to = models.CharField(verbose_name='Возраст по', max_length=10, blank=True)
+    sex = models.CharField(verbose_name='Пол', max_length=10, choices=SEX, default='Любой')
+    lower_normal_value = models.DecimalField(verbose_name='Норма нижняя', max_digits=16, decimal_places=8, blank=True)
+    upper_normal_value = models.DecimalField(verbose_name='Норма верхняя', max_digits=16, decimal_places=8, blank=True)
+    normal_text = models.CharField(verbose_name='Норма текстом', max_length=50, blank=True)
+    clinic_interpretation_key = models.CharField(verbose_name='Ключ клинической интерпретации', max_length=50, blank=True)
+    clinic_interpretation_name = models.CharField(verbose_name='Наименование клинической интерпретации', max_length=50, blank=True)
+    clinic_interpretation_text = models.CharField(verbose_name='Текс клинической интерпретации', max_length=1000, blank=True)
+
+
+class TestSet(models.Model):
+    key_code = models.CharField(verbose_name='Ключ набора тестов', max_length=50, unique=True)
+    name = models.CharField(verbose_name='Наименование набора тестов', max_length=250, unique=True)
+    date_from = models.DateTimeField(blank=True, null=True)
+    date_to = models.DateTimeField(blank=True, null=True)
+    department = models.CharField(verbose_name='Отдел', max_length=15, default='не определен')
+    addendum_key = models.CharField(verbose_name='Код выгрузки приложения в портал', max_length=50, default=None, null=True)
+    tests = models.ManyToManyField(Test, related_name='Тесты_в_наборе')
+    place_of_execution = models.ManyToManyField(PlaceOfExecution, related_name='Места_выполнения')
+
+
 class Service(models.Model):
     class Meta:
         verbose_name = 'Услуги'
@@ -39,6 +111,7 @@ class Service(models.Model):
     kdl_service_key = models.CharField(verbose_name='Кдл. Услуга. Ключ', max_length=50, blank=True, null= True)
     kdl_service_perm_code = models.CharField(verbose_name='Кдл. Услуга. Пермь. Код', max_length=50, blank=True, null= True)
     name = models.CharField(verbose_name='Наименование', max_length=1200)
+    test_set = models.ForeignKey(TestSet, models.SET_NULL, verbose_name='Набор тестов', null=True)
     blanks = models.CharField(verbose_name='Бланки', max_length=256, blank=True, null=True)
     container = models.CharField(verbose_name='контейнеры', max_length=256, blank=True, null=True)
     biomaterials = models.CharField(verbose_name='Биоматериалы', max_length=256, blank=True, null=True)
@@ -81,36 +154,7 @@ class Profile(Service):
 #     code_portal = models.CharField()
 #     name = models.CharField(verbose_name='')
 #
-# class TestSet(models.Model):
-#     key_code = models.CharField()
-#     name = models.CharField()
-#     date_from = models.DateTimeField()
-#     date_to = models.DateTimeField()
-#     department = models.CharField()
-#     start_turn = models.CharField()
-#     addendum_file = models.BooleanField(default=False)
-#     title_in_result = models.CharField()
-#     number_pp = models.IntegerField()
-#
-#     tests = models.ManyToManyField(Test)
-#     place_of_execution = models.ManyToManyField()
-#     conteiners_and_biomaterial = models.ManyToManyField()
-#     autovalidation_rules = models.ManyToManyField()
-#
-#     # outsourcing = models.ManyToManyField()
-#     # protocols = models.ManyToManyField()
-#
-# class Test(models.Model):
-#     keycode = models.CharField()
-#     name = models.CharField()
-#     kdl_test_code = models.CharField()
-#     kdl_test_key = models.CharField()
-#     result_type = models.CharField()
-#     measure_unit = models.CharField(blank=True)
-#     decimal_places = models.SmallIntegerField(blank=True)
-#
-#     coded_result = models.ManyToManyField()
-#     reference = models.ManyToManyField()
+
 #
 # class PlaceOfExecution(models.Model):
 #     city = models.CharField()
