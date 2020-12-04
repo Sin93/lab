@@ -5,8 +5,8 @@ from datetime import date
 CLIENT_GROUPS = [('ND', 'Not defined'),]
 
 SEX = [
-    ('M', 'Мужской'),
-    ('F', 'Женский'),
+    ('M', 'Муж.'),
+    ('F', 'Жен.'),
     ('A', 'Любой')
 ]
 

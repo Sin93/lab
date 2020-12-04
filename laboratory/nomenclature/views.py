@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, FileResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
-from nomenclature.models import Service, Group, SubGroup, UploadFiles
+from nomenclature.models import Service, Group, SubGroup, UploadFiles, Reference
 
 import json, os
 
@@ -48,6 +48,35 @@ def services_view(request, pk):
         previous_service = Service.objects.filter(pk=pk-1).first()
         following_service = Service.objects.filter(pk=pk+1).first()
         files = UploadFiles.objects.filter(service=pk)
+        references = []
+        for test in service.test_set.tests.all():
+            ref = Reference.objects.filter(test=test)
+            ref_list = []
+            for itm in ref:
+                age_from = [int(i) for i in itm.age_from.split(':')]
+                print(age_from)
+                age_to = [int(i) for i in itm.age_to.split(':')]
+                print(age_to)
+                ref_list.append({
+                    'position': itm.position,
+                    'age_from': age_from,
+                    'age_to': age_to,
+                    'sex': itm.sex,
+                    'lower_normal_value': round(itm.lower_normal_value, test.decimal_places),
+                    'upper_normal_value': round(itm.upper_normal_value, test.decimal_places),
+                    'normal_text': itm.normal_text,
+                    'clinic_interpretation_key': itm.clinic_interpretation_key,
+                    'clinic_interpretation_name': itm.clinic_interpretation_name,
+                    'clinic_interpretation_text': itm.clinic_interpretation_text
+                })
+            references.append(
+                {
+                'test_name': test.name,
+                'measure_unit': test.measure_unit,
+                'references': ref_list
+                }
+            )
+
         if not files:
             files = False
         context = {
@@ -56,7 +85,8 @@ def services_view(request, pk):
             'following_service': following_service,
             'service': service,
             'files': files,
-            'upload_file_form': UploadFilesForm
+            'upload_file_form': UploadFilesForm,
+            'references': references,
         }
 
         return render(request, 'nomenclature/service.html', context)

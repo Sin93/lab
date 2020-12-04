@@ -25,3 +25,20 @@
 ul.buttons li {
   display: inline;
 }
+
+p.references {
+  margin-bottom: 1px;
+  line-height: 1;
+}
+
+td.sex {
+  width: 50px;
+}
+
+td.age {
+  width: 250px;
+}
+
+td.references {
+  width: 130px;
+}

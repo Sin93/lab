@@ -63,6 +63,7 @@ $(document).ready(function (){
             } else {
               var edit_link = $('<a>ИНФО</a>')
               edit_link.attr('href', `/services_view/${json[group][subgroup][service][col]}`)
+              edit_link.attr('target', '_blank')
               edit_link.addClass('btn')
               edit_link.addClass('btn-success')
               edit_link.addClass('btn-sm')
