@@ -39,6 +39,7 @@ $(document).ready(function (){
         }
 
         for(service in json[group][subgroup]) {
+          console.log(json[group][subgroup][service]['pk'])
           nom_table = $('table')
           var row = $('<tr></tr>')
           row.addClass('service')
@@ -54,25 +55,23 @@ $(document).ready(function (){
 
           row.attr('id', json[group][subgroup][service][7])
 
-          for(col in json[group][subgroup][service]) {
-            var column = $('<td></td>')
-            column.addClass(COLUMN_CLASSES[col])
+          var name = json[group][subgroup][service][1] == null ? '' : json[group][subgroup][service][1]
+          var blanks = json[group][subgroup][service][2] == null ? '' : json[group][subgroup][service][2]
+          var biomaterials = json[group][subgroup][service][3] == null ? '' : json[group][subgroup][service][3]
+          var containers = json[group][subgroup][service][4] == null ? '' : json[group][subgroup][service][4]
+          var due_date = json[group][subgroup][service][5] == null ? '' : json[group][subgroup][service][5]
+          var result_type = json[group][subgroup][service][6] == null ? '' : json[group][subgroup][service][6]
 
-            if (COLUMN_CLASSES[col] != 'edit-link') {
-              column.text(json[group][subgroup][service][col])
-            } else {
-              var edit_link = $('<a>ИНФО</a>')
-              edit_link.attr('href', `/services_view/${json[group][subgroup][service][col]}`)
-              edit_link.attr('target', '_blank')
-              edit_link.addClass('btn')
-              edit_link.addClass('btn-success')
-              edit_link.addClass('btn-sm')
-              $(column).append(edit_link)
-            };
-
-            $(row).append(column)
-            $(nom_table).append(row)
-          };
+          var a = $(`<td class="code">${json[group][subgroup][service][0]}</td>` +
+            `<td class="name">${name}</td>` +
+            `<td class="blanks">${blanks}</td>` +
+            `<td class="biomaterials">${biomaterials}</td>` +
+            `<td class="containers">${containers}</td>` +
+            `<td class="due_date">${due_date}</td>` +
+            `<td class="result_type">${result_type}</td>` +
+            `<td class="edit-link"><a href="/services_view/${json[group][subgroup][service][7]}" target="_blank" class="btn btn-success btn-sm">ИНФО</a></td>`)
+          $(row).append(a)
+          $(nom_table).append(row)
         };
       };
     };

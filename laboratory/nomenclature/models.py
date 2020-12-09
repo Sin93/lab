@@ -68,10 +68,11 @@ class PlaceOfExecution(models.Model):
 class Test(models.Model):
     keycode = models.CharField(verbose_name='Ключ теста', max_length=50)
     name = models.CharField(verbose_name='Наименование теста', max_length=250)
+    short_name = models.CharField(verbose_name='Наименование теста', max_length=50, blank=True, null=True)
     kdl_test_code = models.CharField(verbose_name='Внешний код (КДЛ.Тест.Код)', max_length=50, blank=True, null=True)
     kdl_test_key = models.CharField(verbose_name='Внешний код (КДЛ.Тест.Ключ)', max_length=50, blank=True, null=True)
     result_type = models.CharField(verbose_name='Тип результата', max_length=30, choices=TEST_RESULT_TYPE)
-    measure_unit = models.CharField(verbose_name='Единицы измерения', max_length=50, blank=True)
+    measure_unit = models.CharField(verbose_name='Единицы измерения', max_length=50, blank=True, null=True)
     decimal_places = models.SmallIntegerField(verbose_name='Количество знаков после запятой', blank=True)
 
 
@@ -79,15 +80,15 @@ class Reference(models.Model):
     test = models.ForeignKey(Test, models.CASCADE, verbose_name='Тест', null=True, blank=True, unique=False)
     active = models.BooleanField(verbose_name='активность', default=True)
     position = models.SmallIntegerField(verbose_name='Позиция', null=True)
-    age_from = models.CharField(verbose_name='Возраст с', max_length=10, blank=True)
-    age_to = models.CharField(verbose_name='Возраст по', max_length=10, blank=True)
-    sex = models.CharField(verbose_name='Пол', max_length=10, choices=SEX, default='Любой')
-    lower_normal_value = models.DecimalField(verbose_name='Норма нижняя', max_digits=16, decimal_places=8, blank=True)
-    upper_normal_value = models.DecimalField(verbose_name='Норма верхняя', max_digits=16, decimal_places=8, blank=True)
-    normal_text = models.CharField(verbose_name='Норма текстом', max_length=50, blank=True)
-    clinic_interpretation_key = models.CharField(verbose_name='Ключ клинической интерпретации', max_length=50, blank=True)
-    clinic_interpretation_name = models.CharField(verbose_name='Наименование клинической интерпретации', max_length=50, blank=True)
-    clinic_interpretation_text = models.CharField(verbose_name='Текс клинической интерпретации', max_length=1000, blank=True)
+    age_from = models.CharField(verbose_name='Возраст с', max_length=10, blank=True, null=True)
+    age_to = models.CharField(verbose_name='Возраст по', max_length=10, blank=True, null=True)
+    sex = models.CharField(verbose_name='Пол', max_length=10, choices=SEX, default='Любой', null=True)
+    lower_normal_value = models.DecimalField(verbose_name='Норма нижняя', max_digits=16, decimal_places=8, blank=True, null=True)
+    upper_normal_value = models.DecimalField(verbose_name='Норма верхняя', max_digits=16, decimal_places=8, blank=True, null=True)
+    normal_text = models.CharField(verbose_name='Норма текстом', max_length=50, blank=True, null=True)
+    clinic_interpretation_key = models.CharField(verbose_name='Ключ клинической интерпретации', max_length=50, blank=True, null=True)
+    clinic_interpretation_name = models.CharField(verbose_name='Наименование клинической интерпретации', max_length=50, blank=True, null=True)
+    clinic_interpretation_text = models.CharField(verbose_name='Текс клинической интерпретации', max_length=1000, blank=True, null=True)
 
 
 class TestSet(models.Model):
@@ -145,8 +146,20 @@ class Profile(Service):
 
     services = models.ManyToManyField(Service, related_name = 'услуги')
 
-# class MadicineData(models.Model):
-#     service = models.ForeignKey(Service, models.SET_NULL, null=True, )
+class MadicineData(models.Model):
+    service = models.ForeignKey(Service, models.SET_NULL, null=True)
+    alter_name_KC = models.TextField(verbose_name='Альтернативные названия для КЦ', blank=True, null=True)
+    alter_name = models.TextField(verbose_name='Альтернативные названия', blank=True, null=True)
+    note = models.TextField(verbose_name='Примечание', blank=True, null=True)
+    volume_pp = models.TextField(verbose_name='Объём ПП', blank=True, null=True)
+    container_pp = models.TextField(verbose_name='Контейнер для ПП', blank=True, null=True)
+    guide_pp = models.TextField(verbose_name='Инструкция по взятию ПП',  blank=True, null=True)
+    transport_conditions = models.TextField(verbose_name='Условия транспортировки', blank=True, null=True)
+    term_assign = models.TextField(verbose_name='Срок доназначения', blank=True, null=True)
+    description = models.TextField(verbose_name='Описание', blank=True, null=True)
+    method = models.TextField(verbose_name='Метод исследования', blank=True, null=True)
+    factors = models.TextField(verbose_name='Влияние различных факторов на результат', blank=True, null=True)
+    preparation = models.TextField(verbose_name='Подготовка к исследованию', blank=True, null=True)
 
 
 # class Client(models.Model):
