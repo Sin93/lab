@@ -16,36 +16,188 @@
 
     <ul class="buttons">
       {% if previous_service %}
-        <li><a class="btn btn-primary" href={% url 'view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
+        <li><a class="btn btn-primary step" href={% url 'view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
       {% endif %}
       {% if following_service %}
-        <li><a class="btn btn-primary" href={% url 'view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
+        <li><a class="btn btn-primary step" href={% url 'view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
       {% endif %}
     </ul>
 
-    <table>
+    <table class="table table-bordered">
       <tr>
-        <th>Код</th>
+        <th class='service_titles'>Код</th>
         <td>{{ service.code }}</td>
       </tr>
       <tr>
-        <th>Наименование</th>
+        <th class='service_titles'>Наименование</th>
         <td>{{ service.name }}</td>
       </tr>
       <tr>
-        <th>Бланки</th>
+        <th class='service_titles'>Бланки</th>
         <td>{{ service.blanks }}</td>
       </tr>
+      {% if service.test_set.addendum_key %}
       <tr>
-        <th>Контейнеры</th>
+        <th class='service_titles'>Код выгрузки приложения в портал</th>
+        <td>{{ service.test_set.addendum_key }}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <th class='service_titles'>Ключ набора тестов</th>
+        <td>{{ test_set.key_code }}</td>
+      </tr>
+      <tr>
+        <th class='service_titles'>Контейнеры</th>
         <td>{{ service.container }}</td>
       </tr>
       <tr>
-        <th>Дата создания</th>
-        <td>{{ service.created_at }}</td>
+        <th class='service_titles'>Биоматериалы:</th>
+        <td>{{ service.biomaterials }}</td>
       </tr>
       <tr>
-        <th>Файлы</th>
+        <th class='service_titles'>Тип результата:</th>
+        <td>{{ service.result_type }}</td>
+      </tr>
+      <tr>
+        <th class='service_titles'>Срок выполнения (для Москвы):</th>
+        <td>
+          {{ service.due_date }} дня(-ей)
+        </td>
+      </tr>
+    </table>
+
+    {% if med_data %}
+    <p>
+      <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        РВПП
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+      <div class="card card-body">
+        <table class="table table-bordered">
+          <tr>
+            <th class='service_titles'>Альтернативные названия для КЦ</th>
+            <td>{{ med_data.alter_name_KC }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Альтернативные названия</th>
+            <td>{{ med_data.alter_name }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Примечание</th>
+            <td>{{ med_data.note }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Объём ПП</th>
+            <td>{{ med_data.volume_pp }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Контейнер для ПП</th>
+            <td>{{ med_data.container_pp }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Инструкция по взятию ПП</th>
+            <td>{{ med_data.guide_pp }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Условия транспортировки</th>
+            <td>{{ med_data.transport_conditions }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Срок доназначения</th>
+            <td>{{ med_data.term_assign }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Описание</th>
+            <td>{{ med_data.description }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Метод исследования</th>
+            <td>{{ med_data.method }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Влияние различных факторов на результат</th>
+            <td>{{ med_data.factors }}</td>
+          </tr>
+          <tr>
+            <th class='service_titles'>Подготовка к исследованию</th>
+            <td>{{ med_data.preparation }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <table class="table table-bordered">
+      {% if references %}
+        <tr>
+          <th>
+            <p>Тесты</p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+              Добавить тест
+            </button>
+          </th>
+          <td>
+            {% for test in references %}
+              <p class='references'><b>{{ test.test_name }}</b></p>
+              <p class='references'>Единицы измерения: {{ test.measure_unit }}</p>
+              <p class='references'>Тип результата: {{ test.result_type }}</p>
+              {% if test.result_type == 'NUMERIC' %}
+              <p class='references'>Количество знаков после запятой <b>(пока по умолчанию - 5, потом заменим на реальные цифры)</b>: {{ test.decimal_places }}</p>
+              {% endif %}
+              <p>Референсы:</p>
+              <table class='table-bordered'>
+                {% for ref in test.references %}
+                <tr>
+                  <td class='sex'>{{ ref.sex }}</td>
+                  <td class='age'>
+                    <p class='references'>от {{ ref.age_from.0 }} лет {{ ref.age_from.1 }} месяцев {{ ref.age_from.2 }} дней</p>
+                    <p class='references'>до {{ ref.age_to.0 }} лет {{ ref.age_to.1 }} месяцев {{ ref.age_to.2 }} дней</p>
+                  </td>
+                  <td class='references'>{{ ref.lower_normal_value }} - {{ ref.upper_normal_value }}</td>
+                  <td class='reference interpretation'>
+                  {% if ref.clinic_interpretation_key %}
+                    <p>Ключ клин. интерпретации: <b>{{ ref.clinic_interpretation_key }}</b></p>
+                    <p>Текст интерпретации:</p>
+                    <p>{{ ref.clinic_interpretation_text }}</p>
+                  {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endif %}
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action={% url 'add_test' pk=service.pk %} method="post">
+                {% csrf_token %}
+                <label for="exampleFormControlSelect1">Выберете тест</label>
+                <select class="form-control" name="test">
+                  {% for test in tests %}
+                  <option value={{ test.pk }} width="500px">{{ test.short_name }} ({{ test.keycode }})</option>
+                  {% endfor %}
+                </select>
+
+                <button type="submit" class="btn btn-primary">Добавить тест</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <tr>
+        <th class='service_titles'>Файлы</th>
         <td>
           <form class="upload_file" method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -67,10 +219,6 @@
           {% endif %}
 
         </td>
-      </tr>
-      <tr>
-        <th></th>
-        <td></td>
       </tr>
     </table>
 {% endblock content %}

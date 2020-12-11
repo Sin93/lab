@@ -25,3 +25,33 @@
 ul.buttons li {
   display: inline;
 }
+
+ul.buttons a {
+  width: 400px;
+  height: 35px;
+}
+
+p.references {
+  margin-bottom: 1px;
+  line-height: 1;
+}
+
+td.sex {
+  width: 50px;
+}
+
+td.age {
+  width: 250px;
+}
+
+td.references {
+  width: 130px;
+}
+
+td.interpretation {
+  width: 500px;
+}
+
+th.service_titles {
+  width: 200px;
+}

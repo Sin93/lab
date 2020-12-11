@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, FileResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
-from nomenclature.models import Service, Group, SubGroup, UploadFiles
+from nomenclature.models import Service, Group, SubGroup, UploadFiles, Reference, Test, MadicineData
 
 import json, os
 
@@ -47,7 +47,40 @@ def services_view(request, pk):
         service = get_object_or_404(Service, pk=pk)
         previous_service = Service.objects.filter(pk=pk-1).first()
         following_service = Service.objects.filter(pk=pk+1).first()
+        med_data = MadicineData.objects.filter(service=service)[0] if MadicineData.objects.filter(service=service) else None
         files = UploadFiles.objects.filter(service=pk)
+        references = []
+        if service.test_set:
+            for test in service.test_set.tests.all():
+                ref = Reference.objects.filter(test=test)
+                ref_list = []
+                for itm in ref:
+                    age_from = [int(i) for i in itm.age_from.split(':')] if itm.age_from else ''
+                    age_to = [int(i) for i in itm.age_to.split(':')] if itm.age_to else ''
+                    lower_normal_value = round(itm.lower_normal_value, test.decimal_places) if itm.lower_normal_value else ''
+                    upper_normal_value = round(itm.upper_normal_value, test.decimal_places) if itm.upper_normal_value else ''
+                    ref_list.append({
+                        'position': itm.position,
+                        'age_from': age_from,
+                        'age_to': age_to,
+                        'sex': itm.sex,
+                        'lower_normal_value': lower_normal_value,
+                        'upper_normal_value': upper_normal_value,
+                        'normal_text': itm.normal_text,
+                        'clinic_interpretation_key': itm.clinic_interpretation_key,
+                        'clinic_interpretation_name': itm.clinic_interpretation_name,
+                        'clinic_interpretation_text': itm.clinic_interpretation_text
+                    })
+                references.append(
+                    {
+                    'test_name': test.name,
+                    'measure_unit': test.measure_unit,
+                    'result_type': test.result_type,
+                    'decimal_places': test.decimal_places,
+                    'references': ref_list
+                    }
+                )
+
         if not files:
             files = False
         context = {
@@ -55,11 +88,26 @@ def services_view(request, pk):
             'previous_service': previous_service,
             'following_service': following_service,
             'service': service,
+            'med_data': med_data,
             'files': files,
-            'upload_file_form': UploadFilesForm
+            'upload_file_form': UploadFilesForm,
+            'tests': Test.objects.all(),
+            'references': references,
         }
 
+        context['test_set'] = service.test_set if service.test_set else None
+
         return render(request, 'nomenclature/service.html', context)
+
+
+def add_test_in_test_set(request, pk):
+    print(request.POST['test'])
+    service = Service.objects.get(pk=pk)
+    print(service.test_set.name)
+    test = get_object_or_404(Test, pk=request.POST['test'])
+    print(test.name)
+    service.test_set.tests.add(test)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def upload_file(request, pk):
