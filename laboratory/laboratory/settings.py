@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nomenclature',
+    'authapp'
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,5 @@ BOOTSTRAP4 = {
     "javascript_in_head": True,
     "include_jquery": True,
 }
+
+LOGIN_URL = '/auth/login/'

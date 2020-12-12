@@ -1,0 +1,29 @@
+{% extends "nomenclature/base.html" %}
+{% load static %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock js %}
+
+{% block content %}
+
+  <table class='table table-bordered'>
+    <thead>
+      <tr class="table-secondary" id="0">
+        <th class='id'>Номер</th>
+        <th class='name'>Наименование</th>
+        <th class='clients'>Клиент(-ы)</th>
+        <th class='created_at'>Дата создания</th>
+        <th class='created_at'>Дата изменений</th>
+        <th class='edit_link'>Кнопки</th>
+      </tr>
+    </thead>
+  </table>
+
+{% endblock content %}
