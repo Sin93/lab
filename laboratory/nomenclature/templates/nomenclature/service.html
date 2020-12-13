@@ -16,10 +16,10 @@
 
     <ul class="buttons">
       {% if previous_service %}
-        <li><a class="btn btn-primary step" href={% url 'view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
+        <li><a class="btn btn-primary step" href={% url 'nom:view' pk=previous_service.pk %} role="button">{{ previous_service.name }} <<</a></li>
       {% endif %}
       {% if following_service %}
-        <li><a class="btn btn-primary step" href={% url 'view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
+        <li><a class="btn btn-primary step" href={% url 'nom:view' pk=following_service.pk %} role="button"> >> {{ following_service.name }}</a></li>
       {% endif %}
     </ul>
 
@@ -169,7 +169,7 @@
           </td>
         </tr>
       {% endif %}
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -179,7 +179,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <form action={% url 'add_test' pk=service.pk %} method="post">
+              <form action={% url 'nom:add_test' pk=service.pk %} method="post">
                 {% csrf_token %}
                 <label for="exampleFormControlSelect1">Выберете тест</label>
                 <select class="form-control" name="test">
@@ -208,8 +208,8 @@
             <table>
               {% for file in files %}
                 <tr>
-                  <td><a href="{% url 'download_file' pk=file.pk %}">{{ file }}</a></td>
-                  <td><a class="btn btn-danger" href={% url 'delete_file' pk=file.pk %} role="button">УДАЛИТЬ</a></td>
+                  <td><a href="{% url 'nom:download_file' pk=file.pk %}">{{ file }}</a></td>
+                  <td><a class="btn btn-danger" href={% url 'nom:delete_file' pk=file.pk %} role="button">УДАЛИТЬ</a></td>
                 </tr>
               {% endfor %}
             </table>

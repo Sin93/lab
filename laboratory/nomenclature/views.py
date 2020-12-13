@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, FileResponse
@@ -8,6 +9,8 @@ import json, os
 
 DICT_OF_IMPORTED_CLASSES = globals()
 
+
+@login_required
 def index(request):
     services = {}
 
@@ -33,6 +36,7 @@ def index(request):
     return render(request, 'nomenclature/services.html', context)
 
 
+@login_required
 def services_view(request, pk):
     service = get_object_or_404(Service, pk=pk)
     if request.method == 'POST':
@@ -100,6 +104,7 @@ def services_view(request, pk):
         return render(request, 'nomenclature/service.html', context)
 
 
+@login_required
 def add_test_in_test_set(request, pk):
     print(request.POST['test'])
     service = Service.objects.get(pk=pk)
@@ -110,6 +115,7 @@ def add_test_in_test_set(request, pk):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required
 def upload_file(request, pk):
     if request.method == 'POST':
         file = request.FILES['file']
@@ -122,12 +128,14 @@ def upload_file(request, pk):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required
 def delete_file(request, pk):
     file = get_object_or_404(UploadFiles, pk=pk)
     file.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required
 def download_file(request, pk):
     response_file = UploadFiles.objects.get(pk=pk)
     print(dir(response_file.file))
@@ -135,6 +143,7 @@ def download_file(request, pk):
     return FileResponse(bynary_file, as_attachment=True)
 
 
+@login_required
 def services_edit(request, pk):
     service = get_object_or_404(Service, pk=pk)
 
@@ -163,6 +172,7 @@ def services_edit(request, pk):
     return render(request, 'nomenclature/services_update.html', context)
 
 
+@login_required
 def json_nomenclature(request):
     result = {}
 
@@ -200,6 +210,7 @@ def json_nomenclature(request):
     return JsonResponse(result)
 
 
+@login_required
 def json_data(request, model, field_type):
     print(model, field_type)
     model = DICT_OF_IMPORTED_CLASSES[model]
