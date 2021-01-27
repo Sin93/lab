@@ -19,9 +19,13 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from nomenclature import views
 
+import authapp.urls
+import nomenclature.urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('nomenclature.urls')),
+    path('', include(nomenclature.urls, namespace='nom')),
+    path('auth/', include(authapp.urls, namespace='auth')),
 ]
 
 if settings.DEBUG:

@@ -2,6 +2,9 @@ from django.urls import path
 
 from . import views
 
+
+app_name = 'nom'
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('edit/<int:pk>', views.services_edit, name='edit'),
