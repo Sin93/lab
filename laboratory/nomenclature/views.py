@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse, FileResponse
 from nomenclature.forms import ServiceEditForm, ProfileEditForm, UploadFilesForm
-from nomenclature.models import Service, Group, SubGroup, UploadFiles, Reference, Test, MadicineData
+from nomenclature.models import Service, Group, SubGroup, UploadFiles, Reference, Test, MadicineData, Biomaterial, Container, BiomaterialContainer, BiomaterialContainerGroup
 
 import json, os
 
@@ -91,6 +91,7 @@ def services_view(request, pk):
             'med_data': med_data,
             'files': files,
             'upload_file_form': UploadFilesForm,
+            'biomaterials_containers': BiomaterialContainer.objects.order_by('container__name'),
             'tests': Test.objects.all(),
             'references': references,
         }
@@ -100,12 +101,31 @@ def services_view(request, pk):
         return render(request, 'nomenclature/service.html', context)
 
 
+def add_biomaterial_container_group(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    bc_group = BiomaterialContainerGroup()
+    bc_group.save()
+    service.bm_cont_groups.add(bc_group)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def delete_biomaterial_container_group(request, pk):
+    bc_group = get_object_or_404(BiomaterialContainerGroup, pk=pk)
+    bc_group.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def add_biomaterial_container_in_group(request, pk):
+    bc_group = get_object_or_404(BiomaterialContainerGroup, pk=pk)
+    bm_cont = get_object_or_404(BiomaterialContainer, pk=request.POST['bm_cont'])
+    print(bc_group.pk, bm_cont.pk)
+    bc_group.biomaterial_container.add(bm_cont)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 def add_test_in_test_set(request, pk):
-    print(request.POST['test'])
     service = Service.objects.get(pk=pk)
-    print(service.test_set.name)
     test = get_object_or_404(Test, pk=request.POST['test'])
-    print(test.name)
     service.test_set.tests.add(test)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -113,8 +133,6 @@ def add_test_in_test_set(request, pk):
 def upload_file(request, pk):
     if request.method == 'POST':
         file = request.FILES['file']
-        print(request)
-        print(type(file))
         service = Service.get_object_or_404(pk=pk)
         upload_file = UploadFiles(service=service, file=file)
         upload_file.save()
@@ -130,7 +148,6 @@ def delete_file(request, pk):
 
 def download_file(request, pk):
     response_file = UploadFiles.objects.get(pk=pk)
-    print(dir(response_file.file))
     bynary_file = response_file.file.open()
     return FileResponse(bynary_file, as_attachment=True)
 
@@ -201,7 +218,6 @@ def json_nomenclature(request):
 
 
 def json_data(request, model, field_type):
-    print(model, field_type)
     model = DICT_OF_IMPORTED_CLASSES[model]
     data = {}
     services = model.objects.all()
