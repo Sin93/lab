@@ -31,6 +31,66 @@ ul.buttons a {
   height: 35px;
 }
 
+span.empty {
+  color: red;
+}
+
+.bm_cont {
+  width:200px;
+  min-height: 52px;
+  border-radius: 20px;
+  background-color: LightGray;
+  text-align: center;
+}
+
+.bm_cont p {
+  margin-block-end: 0px;
+  line-height:20px;
+}
+
+.and_bm {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: auto;
+}
+
+.and_bm p {
+  font-weight: bold;
+}
+
+.bm_cont_group {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+  min-height: 62px;
+}
+
+.bm_cont_group:hover {
+  background-color: Gainsboro;
+}
+
+.bm_cont_group a {
+  height: 23px;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding-top: 1px;
+  display: block;
+}
+
+.bm_cont_group button {
+  height: 23px;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding-top: 1px;
+  display: block;
+}
+
+.bm_cont_group_btns {
+
+}
+
 p.references {
   margin-bottom: 1px;
   line-height: 1;

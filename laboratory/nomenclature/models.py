@@ -91,6 +91,26 @@ class Reference(models.Model):
     clinic_interpretation_text = models.CharField(verbose_name='Текс клинической интерпретации', max_length=1000, blank=True, null=True)
 
 
+class Container(models.Model):
+    code = models.CharField(verbose_name='Код контейнера', max_length=50, unique=True)
+    name = models.CharField(verbose_name='Наименование контейнера', max_length=100, unique=True)
+
+
+class Biomaterial(models.Model):
+    code = models.CharField(verbose_name='Код биоматериала', max_length=20, unique=True)
+    name = models.CharField(verbose_name='Название биоматериала', max_length=200, unique=True)
+    type = models.SmallIntegerField(verbose_name='Тип биоматериала')
+
+
+class BiomaterialContainer(models.Model):
+    biomaterial = models.ForeignKey(Biomaterial, models.CASCADE, verbose_name='Биоматериал', unique=False)
+    container = models.ForeignKey(Container, models.CASCADE, verbose_name='Контейнер', unique=False)
+
+
+class BiomaterialContainerGroup(models.Model):
+    biomaterial_container = models.ManyToManyField(BiomaterialContainer, related_name='Группы')
+
+
 class TestSet(models.Model):
     key_code = models.CharField(verbose_name='Ключ набора тестов', max_length=50, unique=True)
     name = models.CharField(verbose_name='Наименование набора тестов', max_length=250, unique=True)
@@ -116,6 +136,7 @@ class Service(models.Model):
     blanks = models.CharField(verbose_name='Бланки', max_length=256, blank=True, null=True)
     container = models.CharField(verbose_name='контейнеры', max_length=256, blank=True, null=True)
     biomaterials = models.CharField(verbose_name='Биоматериалы', max_length=256, blank=True, null=True)
+    bm_cont_groups = models.ManyToManyField(BiomaterialContainerGroup, related_name='биоматериалы')
     result_type = models.CharField(verbose_name='тип результата', max_length=100, blank=True, null=True)
     due_date = models.CharField(verbose_name='срок выполнения', max_length=50, blank=True, null=True)
     subgroup = models.ForeignKey(SubGroup, models.SET_NULL, verbose_name='Группа тестов', null=True, blank=True, unique=False)

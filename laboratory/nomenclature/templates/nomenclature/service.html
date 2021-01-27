@@ -42,6 +42,74 @@
         <td>{{ service.test_set.addendum_key }}</td>
       </tr>
       {% endif %}
+
+      <tr>
+        <th class='service_bm'>Биоматериалы</th>
+        <td>
+          {% if service.bm_cont_groups %}
+              {% for group_bm in service.bm_cont_groups.all %}
+              <div class="bm_cont_group">
+                <div class="bm_cont_group_btns">
+                  <a href={% url 'delete_bc_group' pk=group_bm.pk %} class="btn btn-sm btn-primary">Удалить группу</a>
+                  <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#add_bm_{{ group_bm.pk }}">
+                    Добавить б/м в группу
+                  </button>
+                  <div class="modal fade" id="add_bm_{{ group_bm.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form action={% url 'add_bm_cont' pk=group_bm.pk %} method="post">
+                            {% csrf_token %}
+                            <label for="exampleFormControlSelect1">Выберете биоматериал</label>
+                            <select class="form-control" name="bm_cont">
+                              {% for bm_cont in biomaterials_containers %}
+                              <option value={{ bm_cont.pk }} width="500px">({{ bm_cont.container.code }}) {{ bm_cont.biomaterial.code }} - {{ bm_cont.biomaterial.name }}</option>
+                              {% endfor %}
+                            </select>
+
+                            <button type="submit" class="btn btn-primary">Добавить биоматериал</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% if group_bm.biomaterial_container.all %}
+                  {% for bm_cont in group_bm.biomaterial_container.all %}
+                    <div class="bm_cont">
+                      <p>{{ bm_cont.container.code }}</p>
+                      <p>{{ bm_cont.biomaterial.code }} - {{ bm_cont.biomaterial.name }}</p>
+                    </div>
+                    {% if bm_cont != group_bm.biomaterial_container.last %}
+                    <div class="and_bm">
+                      <p>+</p>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                <span class='empty'>Пустая группа биоматериалов</span>
+                {% endif %}
+              </div>
+                {% if group_bm != service.bm_cont_groups.last %}
+                  <span>или</span>
+                {% endif %}
+              {% endfor %}
+
+          {% else %}
+          <p>-</p>
+          {% endif %}
+          <a href={% url 'add_bc_group' pk=service.pk %} class="btn btn-sm btn-primary">Добавить группу биоматериалов</a>
+        </td>
+      </tr>
+
       <tr>
         <th class='service_titles'>Ключ набора тестов</th>
         <td>{{ test_set.key_code }}</td>
@@ -129,15 +197,15 @@
     {% endif %}
 
     <table class="table table-bordered">
-      {% if references %}
         <tr>
           <th>
             <p>Тесты</p>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_test">
               Добавить тест
             </button>
           </th>
           <td>
+            {% if references %}
             {% for test in references %}
               <p class='references'><b>{{ test.test_name }}</b></p>
               <p class='references'>Единицы измерения: {{ test.measure_unit }}</p>
@@ -147,6 +215,13 @@
               {% endif %}
               <p>Референсы:</p>
               <table class='table-bordered'>
+                <tr>
+                  <th>Пол</th>
+                  <th>Возраст</th>
+                  <th>Численные референсы</th>
+                  <th>Норма текстом</th>
+                  <th>Клиническая интерпретация (автокомментарий)</th>
+                </tr>
                 {% for ref in test.references %}
                 <tr>
                   <td class='sex'>{{ ref.sex }}</td>
@@ -154,7 +229,26 @@
                     <p class='references'>от {{ ref.age_from.0 }} лет {{ ref.age_from.1 }} месяцев {{ ref.age_from.2 }} дней</p>
                     <p class='references'>до {{ ref.age_to.0 }} лет {{ ref.age_to.1 }} месяцев {{ ref.age_to.2 }} дней</p>
                   </td>
-                  <td class='references'>{{ ref.lower_normal_value }} - {{ ref.upper_normal_value }}</td>
+
+                  <td class='references'>
+                    {% if ref.lower_normal_value and ref.upper_normal_value %}
+                    {{ ref.lower_normal_value }} - {{ ref.upper_normal_value }}
+                    {% else %}
+                    {% if ref.lower_normal_value %}
+                    > {{ ref.lower_normal_value }}
+                    {% endif %}
+                    {% if ref.upper_normal_value %}
+                    < {{ ref.upper_normal_value }}
+                    {% endif %}
+                    {% endif %}
+                  </td>
+
+                  <td class='normal_text'>
+                    {% if ref.normal_text %}
+                      {{ ref.normal_text }}
+                    {% endif %}
+                  </td>
+
                   <td class='reference interpretation'>
                   {% if ref.clinic_interpretation_key %}
                     <p>Ключ клин. интерпретации: <b>{{ ref.clinic_interpretation_key }}</b></p>
@@ -166,10 +260,11 @@
                 {% endfor %}
               </table>
             {% endfor %}
+            {% endif %}
           </td>
         </tr>
-      {% endif %}
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+      <div class="modal fade" id="add_test" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">

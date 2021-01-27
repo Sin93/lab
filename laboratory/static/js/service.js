@@ -1,3 +1,5 @@
 // $(document).ready(function(){
-//   $('li').css('width', '500px')
+//   $.getJSON('/get_biomaterial_container', {}, function (json){
+//
+//   };
 // });

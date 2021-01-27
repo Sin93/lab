@@ -15,4 +15,7 @@ urlpatterns = [
     path('download_file/<int:pk>', views.download_file, name='download_file'),
     path('delete_file/<int:pk>', views.delete_file, name='delete_file'),
     path('add_test/<int:pk>', views.add_test_in_test_set, name='add_test'),
+    path('add_bc_group/<int:pk>', views.add_biomaterial_container_group, name='add_bc_group'),
+    path('add_bm_cont/<int:pk>', views.add_biomaterial_container_in_group, name='add_bm_cont'),
+    path('delete_bc_group/<int:pk>', views.delete_biomaterial_container_group, name='delete_bc_group'),
 ]
