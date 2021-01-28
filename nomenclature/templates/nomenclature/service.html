@@ -50,7 +50,7 @@
               {% for group_bm in service.bm_cont_groups.all %}
               <div class="bm_cont_group">
                 <div class="bm_cont_group_btns">
-                  <a href={% url 'delete_bc_group' pk=group_bm.pk %} class="btn btn-sm btn-primary">Удалить группу</a>
+                  <a href={% url 'nom:delete_bc_group' pk=group_bm.pk %} class="btn btn-sm btn-primary">Удалить группу</a>
                   <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#add_bm_{{ group_bm.pk }}">
                     Добавить б/м в группу
                   </button>
@@ -64,7 +64,7 @@
                           </button>
                         </div>
                         <div class="modal-body">
-                          <form action={% url 'add_bm_cont' pk=group_bm.pk %} method="post">
+                          <form action={% url 'nom:add_bm_cont' pk=group_bm.pk %} method="post">
                             {% csrf_token %}
                             <label for="exampleFormControlSelect1">Выберете биоматериал</label>
                             <select class="form-control" name="bm_cont">
@@ -106,7 +106,7 @@
           {% else %}
           <p>-</p>
           {% endif %}
-          <a href={% url 'add_bc_group' pk=service.pk %} class="btn btn-sm btn-primary">Добавить группу биоматериалов</a>
+          <a href={% url 'nom:add_bc_group' pk=service.pk %} class="btn btn-sm btn-primary">Добавить группу биоматериалов</a>
         </td>
       </tr>
 
